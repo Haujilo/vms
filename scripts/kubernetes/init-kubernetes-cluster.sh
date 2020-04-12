@@ -43,18 +43,15 @@ cp -f $KUBECONFIG $home/.kube/config
 chown $user:$user $home/.kube/config
 echo "export KUBECONFIG=$KUBECONFIG" >> ~root/.profile
 
-
-# https://docs.projectcalico.org/getting-started/kubernetes/quickstart
-calico_version=v3.13
-curl https://docs.projectcalico.org/$calico_version/manifests/calico.yaml -O
-sed -i -e "s?192.168.0.0/16?$POD_NETWORK_CIDR?g" calico.yaml
-kubectl apply -f calico.yaml && rm -rf calico.yaml
-
-
 # let other nodes join
 TOKEN=`kubeadm token list | head -n 2 | tail -n 1 | cut -d ' ' -f 1`
 SHA256_HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
 DEFAULT_JUMP_CMD="kubeadm join $CONTROL_PLANE_ENDPOINT --token $TOKEN --discovery-token-ca-cert-hash sha256:$SHA256_HASH"
+
+# https://docs.projectcalico.org/getting-started/kubernetes/quickstart
+curl https://docs.projectcalico.org/manifests/calico.yaml -O
+sed -i -e "s?192.168.0.0/16?$POD_NETWORK_CIDR?g" calico.yaml
+kubectl apply -f calico.yaml && rm -rf calico.yaml
 
 OTHER_MASTER_NODE_IPS=$(grep '\skubernetes-master-' /etc/hosts | grep -v `hostname` | cut -f 1)
 for ip in ${OTHER_MASTER_NODE_IPS[@]} ; do
