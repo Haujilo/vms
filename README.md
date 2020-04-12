@@ -34,6 +34,11 @@ vagrant plugin install vagrant-hostmanager
 vagrant plugin install vagrant-group
 ```
 
+```
+# 第一次使用需要先制作和导出base镜像，并导入成一个本地box
+./build_base_box.sh
+```
+
 ## 使用
 
 ```shell
