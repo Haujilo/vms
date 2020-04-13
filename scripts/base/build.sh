@@ -116,7 +116,7 @@ ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
 echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
 echo "NTP=ntp1.aliyun.com ntp2.aliyun.com ntp3.aliyun.com ntp4.aliyun.com ntp5.aliyun.com ntp6.aliyun.com ntp7.aliyun.com" > /etc/systemd/timesyncd.conf
 
-apt -y install tzdata locales less net-tools iputils-ping \
+apt -y install tzdata locales snapd less net-tools iputils-ping \
   vim-tiny curl zip unzip apt-transport-https ca-certificates \
   gnupg2 software-properties-common psmisc tmux
 dpkg-reconfigure locales tzdata

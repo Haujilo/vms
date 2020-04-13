@@ -31,6 +31,9 @@ module Provision
       if role == "master" then
         self.define_haproxy_provisions(config, "#{self.category}-apiserver", "#{self.category}-#{role}-", @vip_port, 6443)
         self.define_keepalived_provisions(config, self.category, @vip, index, "/usr/bin/killall -0 haproxy")
+        config.vm.provision "install-helm", type: "shell", run: "never" do |s|
+          s.path = self.get_script_path("install-helm.sh")
+        end
       end
       super
       config.vm.provision "install-kubernetes", type: "shell" do |s|
