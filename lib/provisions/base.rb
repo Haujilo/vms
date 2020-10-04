@@ -1,10 +1,10 @@
 module Provision
   class Base
 
-    # 192.168.51.0/16
-    @@vip = 0b11000000101010000011001100000000
-    # 192.168.101.0/16
-    @@ip = 0b11000000101010000110010100000000
+    # 192.168.0.10/24
+    @@vip = 0b11000000101010000000000000001010
+    # 192.168.0.200/24
+    @@ip = 0b11000000101010000000000011001000
 
     def assign_ip_addr(start_ip, max_ip)
       ip = start_ip + 1
@@ -25,12 +25,12 @@ module Provision
     end
 
     def assign_vip_addr()
-      @@vip = self.assign_ip_addr(@@vip, 0b11000000101010000110010100000000)
+      @@vip = self.assign_ip_addr(@@vip, 0b11000000101010000000000001100100)
       ip_to_s(@@vip)
     end
 
     def assign_rip_addr()
-      @@ip = self.assign_ip_addr(@@ip, 0b11000000101010010000000000000000)
+      @@ip = self.assign_ip_addr(@@ip, 0b11000000101010000000000011111101)
       ip_to_s(@@ip)
     end
 
@@ -38,7 +38,7 @@ module Provision
       self.class.name.split('::').last.downcase
     end
 
-    def initialize(cpus = 1, memory = 256, role_assigned = {"server"=>1})
+    def initialize(cpus = 1, memory = 512, role_assigned = {"server"=>1})
       @cpus, @memory, @role_assigned = cpus, memory, role_assigned
       @amount = role_assigned.sum {|k, v| v }
     end

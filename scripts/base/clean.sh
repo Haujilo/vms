@@ -8,6 +8,7 @@ apt -y clean
 rm -rf /var/lib/apt/lists/*
 
 sed -i '/#VAGRANT-BEGIN/,/#VAGRANT-END/d' /etc/network/interfaces
+sed -i '/dns-nameserver /d' /etc/network/interfaces
 sed -i '/## vagrant-hostmanager-start/,/## vagrant-hostmanager-end/d' /etc/hosts
 rm -rf /BUILD
 rm -rf /tmp/*

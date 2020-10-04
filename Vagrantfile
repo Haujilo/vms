@@ -4,7 +4,7 @@ require_relative "lib/provisions"
 
 BUILD_BASE_BOX = ENV['BUILD_BASE_BOX']
 PRI_SSH_KEY = "./data/ssh/id_rsa"
-BUILD_FROM_BOX = "debian/buster64"
+BUILD_FROM_BOX = "generic/debian10"
 DEFAULT_BOX = "local/debian"
 
 Vagrant.require_version ">= 2.2.7"
@@ -18,8 +18,14 @@ Vagrant.configure("2") do |config|
   # https://github.com/devopsgroup-io/vagrant-hostmanager
   config.hostmanager.enabled = true
   config.hostmanager.manage_guest = true
-  config.hostmanager.ignore_private_ip = false
   config.hostmanager.include_offline = true
+  if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil then # Windows
+    config.hostmanager.ignore_private_ip = true
+    config.vm.network "public_network", bridge: "Vagrant"
+  else
+    config.hostmanager.ignore_private_ip = false
+  end
+
 
   # https://github.com/dotless-de/vagrant-vbguest
   config.vbguest.auto_update = false

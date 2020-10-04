@@ -70,47 +70,6 @@ root soft nofile 1024000
 root hard nofile 1024000
 EOF
 
-# config repo and upgrade
-cp /etc/apt/sources.list /etc/apt/sources.list.bak
-cat > /etc/apt/sources.list << EOF
-# stable
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
-deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
-
-# testing
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ testing main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ testing main contrib non-free
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ testing-updates main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ testing-updates main contrib non-free
-deb https://mirrors.tuna.tsinghua.edu.cn/debian-security testing-security main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security testing-security main contrib non-free
-
-# sid
-deb https://mirrors.tuna.tsinghua.edu.cn/debian/ sid main contrib non-free
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ sid main contrib non-free
-EOF
-cat > /etc/apt/preferences.d/my_preferences << EOF
-Package: *
-Pin: release a=stable
-Pin-Priority: 700
-
-Package: *
-Pin: release a=testing
-Pin-Priority: 650
-
-Package: *
-Pin: release a=unstable
-Pin-Priority: 600
-EOF
-apt -y update
-apt -y dist-upgrade
-
 TZ=Asia/Shanghai
 ln -fs /usr/share/zoneinfo/$TZ /etc/localtime
 echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen

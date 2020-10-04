@@ -11,10 +11,11 @@
 
 目前同类型的机器可以分组，可以分组启动，所有机器同属于一个网段中。
 
+## 安装
 
-## 依赖
+### macOS
 
-安装：
+依赖：
 
 - [virtualbox](https://www.virtualbox.org/)
 - [vagrant](https://www.vagrantup.com/)
@@ -23,7 +24,7 @@
   - [vagrant-group](https://github.com/vagrant-group/vagrant-group)
 
 ```shell
-# macOS安装示例
+# 安装示例
 
 brew cask install virtualbox
 brew cask install vagrant
@@ -37,6 +38,27 @@ vagrant plugin install vagrant-group
 ```
 # 第一次使用需要先制作和导出base镜像，并导入成一个本地box
 ./build_base_box.sh
+```
+
+### Windows
+
+依赖：
+
+- [Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/)
+- [vagrant](https://www.vagrantup.com/)
+  - [vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
+  - [vagrant-group](https://github.com/vagrant-group/vagrant-group)
+
+按官方教程开启Hyper-V和安装好vagrant，Hyper-V创建一个名为Vagrant的外部虚拟交换机。
+
+```powershell
+
+# 安装插件
+vagrant plugin install vagrant-hostmanager
+vagrant plugin install vagrant-group
+
+# 第一次使用需要先制作和导出base镜像，并导入成一个本地box
+Powershell -File build_base_box.ps1
 ```
 
 ## 使用

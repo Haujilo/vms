@@ -44,8 +44,8 @@ chown $user:$user $home/.kube/config
 echo "export KUBECONFIG=$KUBECONFIG" >> ~root/.profile
 
 # let other nodes join
-TOKEN=`kubeadm token list | head -n 2 | tail -n 1 | cut -d ' ' -f 1`
-SHA256_HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+TOKEN=`kubeadm token list | grep system:bootstrappers:kubeadm:default-node-token | cut -d ' ' -f 1`
+SHA256_HASH=`openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | cut -d ' ' -f 2`
 DEFAULT_JUMP_CMD="kubeadm join $CONTROL_PLANE_ENDPOINT --token $TOKEN --discovery-token-ca-cert-hash sha256:$SHA256_HASH"
 
 # https://docs.projectcalico.org/getting-started/kubernetes/quickstart

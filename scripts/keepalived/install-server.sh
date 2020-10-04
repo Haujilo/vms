@@ -11,7 +11,7 @@ num="$3"
 check_script="$4"
 
 auth_pass=c61decf156d1fe60275fbf73c49e342d
-interface="eth1"
+interface="eth0"
 router_id="${cluster_name}0$num"
 virtual_router_id=`echo $vip | cut -d"." -f 4`
 vrrp_interface_name="${cluster_name}"
@@ -47,7 +47,7 @@ vrrp_instance $vrrp_interface_name {
     auth_pass $auth_pass
   }
   virtual_ipaddress {
-    ${vip}/16
+    ${vip}/24
   }
   track_script {
     check_alive
