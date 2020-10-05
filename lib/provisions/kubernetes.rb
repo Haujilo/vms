@@ -16,7 +16,7 @@ module Provision
       @vip = self.assign_vip_addr
       @vip_port = 16443
       @pod_cidr = "10.244.0.0/16"
-      @svc_cidr = "10.96.0.0/12"
+      @svc_cidr = "172.18.0.0/16"
     end
 
     def global_define_provisions(config)
