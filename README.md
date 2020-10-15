@@ -20,7 +20,6 @@
 - [virtualbox](https://www.virtualbox.org/)
 - [vagrant](https://www.vagrantup.com/)
   - [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest)
-  - [vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
   - [vagrant-group](https://github.com/vagrant-group/vagrant-group)
 
 ```shell
@@ -31,7 +30,6 @@ brew cask install vagrant
 
 # 安装vagrant使用的插件
 vagrant plugin install vagrant-vbguest
-vagrant plugin install vagrant-hostmanager
 vagrant plugin install vagrant-group
 ```
 
@@ -46,7 +44,6 @@ vagrant plugin install vagrant-group
 
 - [Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/)
 - [vagrant](https://www.vagrantup.com/)
-  - [vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
   - [vagrant-group](https://github.com/vagrant-group/vagrant-group)
 
 按官方教程开启Hyper-V和安装好vagrant，Hyper-V创建一个名为Vagrant的外部虚拟交换机。
@@ -54,7 +51,6 @@ vagrant plugin install vagrant-group
 ```powershell
 
 # 安装插件
-vagrant plugin install vagrant-hostmanager
 vagrant plugin install vagrant-group
 
 # 第一次使用需要先制作和导出base镜像，并导入成一个本地box

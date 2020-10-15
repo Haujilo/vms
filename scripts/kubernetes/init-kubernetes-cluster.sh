@@ -3,10 +3,12 @@
 set -uexo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
-ADVERTISE_ADDRESS=$(hostname -i | cut -d' ' -f 2)
 CONTROL_PLANE_ENDPOINT=$1
 POD_NETWORK_CIDR=$2
 SVC_NETWORK_CIDR=$3
+IFACE=$4
+NODES=$5
+ADVERTISE_ADDRESS=`ip -o -4 addr list $IFACE | grep dynamic | awk '{print $4}' | cut -d/ -f1`
 IMAGE_REPOSITORY=registry.cn-hangzhou.aliyuncs.com/google_containers
 
 # https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta2
@@ -49,28 +51,24 @@ SHA256_HASH=`openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -
 DEFAULT_JUMP_CMD="kubeadm join $CONTROL_PLANE_ENDPOINT --token $TOKEN --discovery-token-ca-cert-hash sha256:$SHA256_HASH"
 
 # https://docs.projectcalico.org/getting-started/kubernetes/quickstart
-kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
-curl https://docs.projectcalico.org/manifests/custom-resources.yaml -O
-sed -i -e "s?192.168.0.0/16?$POD_NETWORK_CIDR?g" custom-resources.yaml
-kubectl create -f custom-resources.yaml && rm -rf custom-resources.yaml
+sed -i -e "s?192.168.0.0/16?$POD_NETWORK_CIDR?g" /tmp/custom-resources.yaml
+kubectl create -f /tmp/tigera-operator.yaml && kubectl create -f /tmp/custom-resources.yaml && rm -rf /tmp/tigera-operator.yaml /tmp/custom-resources.yaml
 
-OTHER_MASTER_NODE_IPS=$(grep '\skubernetes-master-' /etc/hosts | grep -v `hostname` | cut -f 1)
-for ip in ${OTHER_MASTER_NODE_IPS[@]} ; do
-  ssh -o StrictHostKeyChecking=no vagrant@$ip "sudo $DEFAULT_JUMP_CMD --apiserver-advertise-address $ip --control-plane --certificate-key $certificate_key"
-  ssh -o StrictHostKeyChecking=no vagrant@$ip "mkdir -p $home/.kube"
-  ssh -o StrictHostKeyChecking=no vagrant@$ip "sudo cp -f $KUBECONFIG $home/.kube/config"
-  ssh -o StrictHostKeyChecking=no vagrant@$ip "sudo chown $user:$user $home/.kube/config"
-  ssh -o StrictHostKeyChecking=no vagrant@$ip "echo export KUBECONFIG=$KUBECONFIG | sudo tee ~root/.profile"
+OTHER_MASTER_NODES=$(echo $NODES | xargs -n 1 | grep -v `hostname` | grep -v minion)
+for node in ${OTHER_MASTER_NODES[@]} ; do
+  ip=$(ssh -o StrictHostKeyChecking=no vagrant@$node "ip -o -4 addr list $IFACE | grep dynamic | awk '{print \$4}' | cut -d/ -f1")
+  ssh -o StrictHostKeyChecking=no vagrant@$node "sudo $DEFAULT_JUMP_CMD --apiserver-advertise-address $ip --control-plane --certificate-key $certificate_key"
+  ssh -o StrictHostKeyChecking=no vagrant@$node "mkdir -p $home/.kube"
+  ssh -o StrictHostKeyChecking=no vagrant@$node "sudo cp -f $KUBECONFIG $home/.kube/config"
+  ssh -o StrictHostKeyChecking=no vagrant@$node "sudo chown $user:$user $home/.kube/config"
+  ssh -o StrictHostKeyChecking=no vagrant@$node "echo export KUBECONFIG=$KUBECONFIG | sudo tee ~root/.profile"
 done
 # remove the taints on the master so that you can schedule pods on it.
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
-MINION_NODE_IPS=$(grep '\skubernetes-minion-' /etc/hosts | cut -f 1)
-for ip in ${MINION_NODE_IPS[@]} ; do
-  ssh -o StrictHostKeyChecking=no vagrant@$ip "sudo $DEFAULT_JUMP_CMD --apiserver-advertise-address $ip"
-done
-
-MINION_NODES=$(grep '\skubernetes-minion-' /etc/hosts | cut -f 2)
+MINION_NODES=$(echo $NODES | xargs -n 1 | grep minion)
 for node in ${MINION_NODES[@]} ; do
+  ip=$(ssh -o StrictHostKeyChecking=no vagrant@$node "ip -o -4 addr list $IFACE | grep dynamic | awk '{print \$4}' | cut -d/ -f1")
+  ssh -o StrictHostKeyChecking=no vagrant@$node "sudo $DEFAULT_JUMP_CMD --apiserver-advertise-address $ip"
   kubectl label node $node node-role.kubernetes.io/minion=
 done

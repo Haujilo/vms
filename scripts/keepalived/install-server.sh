@@ -11,7 +11,7 @@ num="$3"
 check_script="$4"
 
 auth_pass=c61decf156d1fe60275fbf73c49e342d
-interface="eth0"
+interface="$5"
 router_id="${cluster_name}0$num"
 virtual_router_id=`echo $vip | cut -d"." -f 4`
 vrrp_interface_name="${cluster_name}"

@@ -5,10 +5,10 @@ module Provision
 
   module Keepalived
 
-    def define_keepalived_provisions(config, cluster_name, vip, num, check_script)
+    def define_keepalived_provisions(config, cluster_name, vip, num, check_script, nic)
       config.vm.provision "install-keepalived-server", type: "shell" do |s|
         s.path = self.get_script_path("install-server.sh")
-        s.args = [cluster_name, vip, num, check_script]
+        s.args = [cluster_name, vip, num, check_script, nic]
       end
     end
 

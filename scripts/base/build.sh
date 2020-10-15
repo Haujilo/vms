@@ -77,6 +77,22 @@ echo "NTP=ntp1.aliyun.com ntp2.aliyun.com ntp3.aliyun.com ntp4.aliyun.com ntp5.a
 
 apt -y install tzdata locales snapd less net-tools iputils-ping \
   vim-tiny curl zip unzip apt-transport-https ca-certificates \
-  gnupg2 software-properties-common psmisc tmux
+  gnupg2 software-properties-common psmisc tmux jq
 dpkg-reconfigure locales tzdata
 systemctl restart systemd-timesyncd
+
+cat > /etc/network/interfaces.d/eth1 << EOF
+auto eth1
+iface eth1 inet dhcp
+    metric 1
+EOF
+
+IFS=',' read -r -a dns <<< "$1"
+for nameserver in "${dns[@]}"
+do
+    echo "nameserver $nameserver" >> /etc/resolvconf/resolv.conf.d/head
+done
+
+cat >> /etc/resolvconf/resolv.conf.d/tail << EOF
+options timeout:1
+EOF

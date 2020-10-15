@@ -6,13 +6,13 @@ export DEBIAN_FRONTEND=noninteractive
 apt -y install haproxy
 
 name="$1"
-server_pattern="$2"
-frontend_port="$3"
-backend_port="$4"
+frontend_port="$2"
+backend_port="$3"
+servers="$4"
 
 stats_password=bf1edae188e1edae6b7d7a8bc8f8b202
 stats_port=1080
-servers=`grep "\s$server_pattern" /etc/hosts | grep -v 127.0 | awk 'BEGIN{x="        server "; y=":'"$backend_port"' check"}{print x $2,$1 y}'`
+servers=`echo $servers | xargs -n 1 | awk 'BEGIN{x="        server "; y=":'"$backend_port"' check"}{print x $1,$1 y}'`
 
 cat >> /etc/haproxy/haproxy.cfg << EOF
 
